@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dz.coop.module.mapper.ExceptionBookRecordMapper">
+
+    <resultMap id="recordMap" type="com.dz.coop.module.model.vo.ExceptionBookRecordVO">
+        <id column="id" property="id" />
+        <result column="book_id" property="bookId"/>
+        <result column="cp_book_id" property="cpBookId"/>
+        <result column="book_type" property="bookType"/>
+        <result column="cp_partner_id" property="cpPartnerId"/>
+        <result column="book_name" property="bookName"/>
+        <result column="chapter_id" property="chapterId"/>
+        <result column="cp_chapter_id" property="cpChapterId"/>
+        <result column="chapter_name" property="chapterName"/>
+        <result column="problem_type" property="problemType"/>
+        <result column="extend" property="extend"/>
+        <result column="ctime" property="ctime"/>
+        <result column="utime" property="utime"/>
+    </resultMap>
+
+    <insert id="save" parameterType="com.dz.coop.module.model.vo.ExceptionBookRecordVO">
+        INSERT INTO b_exception_book_record(book_id, cp_book_id, book_type, cp_partner_id, book_name, chapter_id, cp_chapter_id, chapter_name, `problem_type`, extend, ctime, utime)
+        VALUES (#{bookId}, #{cpBookId}, #{bookType}, #{cpPartnerId}, #{bookName}, #{chapterId}, #{cpChapterId}, #{chapterName}, #{problemType}, #{extend}, now(), now())
+        ON DUPLICATE KEY UPDATE chapter_id = #{chapterId}, cp_chapter_id = #{cpChapterId}, chapter_name = #{chapterName}, extend = #{extend}, utime = NOW()
+    </insert>
+
+    <delete id="deleteByBookId" parameterType="string">
+        DELETE FROM b_exception_book_record WHERE book_id = #{bookId}
+    </delete>
+
+</mapper>

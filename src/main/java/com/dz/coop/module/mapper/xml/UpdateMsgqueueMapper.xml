@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.UpdateMsgqueueMapper">
+
+    <insert id="insertBatch" parameterType="list">
+        insert into b_cache_update_msgqueue
+        (table_name, book_id, action_type, type, utime)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.tableName},#{item.bookId}, #{item.actionType}, #{item.type}, now())
+        </foreach>
+    </insert>
+
+    <insert id="insert">
+        insert into b_cache_update_msgqueue
+        (table_name, book_id, action_type, type, utime)
+        values (#{tableName},#{bookId}, #{actionType}, #{type}, now())
+    </insert>
+
+</mapper>

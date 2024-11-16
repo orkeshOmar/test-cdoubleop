@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.BookPartnerCategoryMapper">
+
+    <resultMap id="baseMap" type="com.dz.coop.module.model.PartnerCategoryModel">
+        <id column="id" property="id"/>
+        <result column="cp_partner_id" property="cpPartnerId"/>
+        <result column="cp_category_id" property="cpCategoryId"/>
+        <result column="cp_category_name" property="cpCategoryName"/>
+        <result column="type_id" property="typeId"/>
+        <result column="type_level" property="typeLevel"/>
+        <result column="type_name" property="typeName"/>
+        <result column="type_v3_id" property="typeV3Id"/>
+        <result column="type_v3_level" property="typeV3Level"/>
+        <result column="type_v3_name" property="typeV3Name"/>
+        <result column="type_id_set" property="typeIdSet"/>
+        <result column="type_v3_id_set" property="typeV3IdSet"/>
+    </resultMap>
+
+    <select id="getCategory" resultMap="baseMap">
+        SELECT * FROM b_owchcp_partner_category_mapper WHERE cp_partner_id=#{cpId} AND cp_category_id=#{cpCategoryId}
+    </select>
+
+</mapper>

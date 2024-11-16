@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.BookTypeThreeMapper">
+    <select id="getListPage" parameterType="com.dz.coop.module.model.BookTypeThree"
+            resultType="com.dz.coop.module.model.BookTypeThree">
+        SELECT
+        id,
+        one_type_id oneTypeId,
+        two_type_id twoTypeId,
+        `name`,
+        description,
+        `status`,
+        ctime,
+        utime
+        FROM b_book_type_three WHERE two_type_id = #{twoTypeId}
+        <if test="name != null and name != ''">
+            and `name` = #{name}
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+    </select>
+
+    <update id="updateStatus" parameterType="com.dz.coop.module.model.BookTypeThree">
+        UPDATE b_book_type_three SET `status` = #{status},utime = now() WHERE id = #{id}
+    </update>
+
+    <delete id="delBookTypeThree" parameterType="java.util.List">
+        DELETE
+        t1.*,
+        t2.*
+        FROM
+        b_book_type_three t1
+        LEFT JOIN b_book_type_center t2 ON t1.id = t2.three_type_id
+        WHERE
+        t1.id IN
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="getBookTypeThree" parameterType="int" resultType="com.dz.coop.module.model.BookTypeThree">
+        SELECT
+            id,
+            one_type_id oneTypeId,
+            two_type_id twoTypeId,
+            `name`,
+            description,
+            `status`,
+            ctime,
+            utime
+        FROM b_book_type_three WHERE id = #{id}
+    </select>
+
+    <insert id="addBookTypeThree" parameterType="com.dz.coop.module.model.BookTypeThree" keyProperty="id"
+            useGeneratedKeys="true">
+        INSERT INTO b_book_type_three(
+          one_type_id,
+          two_type_id,
+          `name`,
+          description,
+          `status`,
+          ctime,
+          utime
+        )VALUES (
+          #{oneTypeId},
+          #{twoTypeId},
+          #{name},
+          #{description},
+          #{status},
+          now(),
+          now()
+        )
+    </insert>
+
+    <update id="updateBookTypeThree" parameterType="com.dz.coop.module.model.BookTypeThree">
+        UPDATE b_book_type_three SET
+        `name` = #{name},
+        description = #{description},
+        `status` = #{status},
+        utime = now()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectName" parameterType="com.dz.coop.module.model.BookTypeThree"
+            resultType="com.dz.coop.module.model.BookTypeThree">
+        SELECT id,`name` FROM b_book_type_three WHERE `name` = #{name} AND two_type_id = #{twoTypeId} AND id != #{id}
+    </select>
+
+    <!--根据name查询行数-->
+    <select id="getByName" parameterType="com.dz.coop.module.model.BookTypeThree"
+            resultType="com.dz.coop.module.model.BookTypeThree">
+          SELECT th.id,
+        th.one_type_id oneTypeId,
+        th.two_type_id twoTypeId,
+        th.`name`,
+        th.description,
+        th.`status`,
+        th.ctime,
+        th.utime from b_book_type_three th  right JOIN b_book_type_two tw on th.two_type_id = tw.id
+        and tw.cl_pay_ability = #{cl_pay_ability} and tw.`status` = 1 right join b_book_type_one o on
+        th.one_type_id = o.id and o.is_show = 1 where th.`name` = #{name} and th.status = 1 limit 1
+    </select>
+
+    <select id="getAllTypeThree" resultType="com.dz.coop.module.model.BookTypeThree">
+         SELECT
+        id,
+        one_type_id oneTypeId,
+        two_type_id twoTypeId,
+        `name`,
+        description,
+        `status`,
+        ctime,
+        utime
+        FROM b_book_type_three
+    </select>
+</mapper>

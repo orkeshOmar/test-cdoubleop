@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.BookIdMapper">
+
+    <insert id="insertBookId"  parameterType="com.dz.coop.module.model.BookId" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO b_owchcp_bookid (ctime)
+		VALUES (now())
+	</insert>
+
+	<insert id="insertAudioBookId"  parameterType="com.dz.coop.module.model.BookId" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO b_audio_bookid (ctime)
+		VALUES (now())
+	</insert>
+
+</mapper>

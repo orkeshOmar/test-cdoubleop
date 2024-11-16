@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.BreakBookContentMapper">
+
+    <resultMap id="baseMap" type="com.dz.coop.module.model.BreakBookContent">
+        <id column="id" property="id"/>
+        <result column="book_id" property="bookId"/>
+        <result column="content" property="content"/>
+        <result column="ctime" property="ctime"/>
+        <result column="utime" property="utime"/>
+    </resultMap>
+
+    <!--表名 -->
+    <sql id="tableName">
+		b_break_book_content
+	</sql>
+
+    <!-- 字段 -->
+    <sql id="Field">
+		id,
+		book_id,
+		content,
+		ctime,
+		utime
+	</sql>
+
+    <!-- 字段值 -->
+    <sql id="FieldValue">
+		#{id},
+		#{bookId},
+		#{content},
+		#{ctime},
+		#{utime}
+	</sql>
+
+    <!-- 新增-->
+    <insert id="insertOrUpdate" parameterType="com.dz.coop.module.model.BreakBookContent">
+        insert into
+        <include refid="tableName"></include>
+        (
+        book_id,
+        content,
+        ctime
+        ) values (
+        #{bookId},
+        #{content},
+        now()
+        )
+        ON DUPLICATE KEY UPDATE content = VALUES(content),utime=now()
+    </insert>
+
+    <!-- 删除-->
+    <delete id="deleteByBookId" parameterType="string">
+        delete from
+        <include refid="tableName"></include>
+        where
+        book_id = #{bookId}
+    </delete>
+
+    <!-- 通过ID获取数据 -->
+    <select id="getByBookId" parameterType="string" resultMap="baseMap">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        where
+        book_id = #{bookId}
+    </select>
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.PartnerMapper">
+
+    <resultMap id="partnerMap" type="com.dz.coop.module.model.Partner">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="apikey" property="apiKey"/>
+        <result column="is_sync" property="isSync"/>
+        <result column="is_owner" property="isOwch"/>
+        <result column="alias_id" property="aliasId"/>
+        <result column="book_type" property="bookType"/>
+        <result column="is_our_standard" property="isOurStandard"/>
+        <result column="is_ip_whitelist" property="isIpWhitelist"/>
+        <result column="ctime" property="ctime"/>
+
+        <association property="url" column="id" select="com.dz.coop.module.mapper.PartnerUrlMapper.getPartnerUrlByPartnerId"/>
+    </resultMap>
+
+    <select id="listAllPartners" parameterType="int" resultMap="partnerMap">
+        SELECT * FROM b_owchcp_partner WHERE is_sync=1 AND book_type = #{bookType}
+    </select>
+
+    <select id="getPartnerById" resultMap="partnerMap">
+        select * from b_owchcp_partner where id=#{id}
+    </select>
+
+    <select id="listAllOurStandardPartners" resultMap="partnerMap">
+        SELECT p.id, p.name, p.apikey, p.is_sync, p.is_owner, p.alias_id, p.book_type, p.is_our_standard, p.is_ip_whitelist, p.ctime
+        FROM b_owchcp_partner p, b_owchcp_partner_url u
+        WHERE p.id = u.pid AND p.book_type = 1 AND p.is_our_standard = 1
+    </select>
+
+    <select id="listAllOwnPartners" resultMap="partnerMap">
+        SELECT p.id, p.name, p.apikey, p.is_sync, p.is_owner, p.alias_id, p.book_type, p.is_our_standard, p.is_ip_whitelist, p.ctime
+        FROM b_owchcp_partner p, b_owchcp_partner_url u
+        WHERE p.id = u.pid AND p.book_type = 1 AND p.is_our_standard = 2 AND p.is_owner = 1
+    </select>
+
+</mapper>

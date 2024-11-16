@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.ChapterMapper">
+
+    <resultMap id="chapterMap" type="com.dz.coop.module.model.Chapter">
+        <id column="id" property="id"/>
+        <result column="cp_chapter_id" property="cpChapterId"/>
+        <result column="volume_id" property="volumeId"/>
+        <result column="book_id" property="bookId"/>
+        <result column="name" property="name"/>
+        <result column="is_free" property="isFree"/>
+        <result column="is_exist" property="isExist"/>
+        <result column="word_num" property="wordNum"/>
+        <result column="ctime" property="ctime"/>
+        <result column="utime" property="utime"/>
+
+        <association property="cpVolumeId" column="volume_id" select="com.dz.coop.module.mapper.VolumeMapper.getVolumeById"/>
+    </resultMap>
+    
+    <resultMap id="chapterExtendMap" type="com.dz.coop.module.model.ChapterExtend">
+        <id column="id" property="id"/>
+        <result column="chapter_id" property="chapterId"/>
+        <result column="extend" property="extend"/>
+        <result column="ctime" property="ctime"/>
+        <result column="utime" property="utime"/>
+    </resultMap>
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into b_owchcp_chapter(cp_chapter_id,volume_id,book_id,name,is_free,ctime,utime) values (#{cpChapterId},#{volumeId},#{bookId},#{name},#{isFree},now(),now())
+    </insert>
+
+    <update id="updateChapter">
+        update b_owchcp_chapter set word_num=#{wordNum},is_exist=#{isExist} where id=#{id}
+    </update>
+
+    <delete id="delete">
+        delete from b_owchcp_chapter where id=#{id}
+    </delete>
+
+    <delete id="deleteChapterExtend">
+        delete from b_owchcp_chapter_extend where book_id = #{bookId} AND chapter_id=#{chapterId}
+    </delete>
+
+    <select id="countChapters" resultType="int">
+        select count(1) from b_owchcp_chapter where book_id=#{bookId}
+    </select>
+
+    <select id="countBookWordNumAndChapterNum" resultType="java.util.Map">
+        SELECT
+			SUM(word_num)				AS wordNum,
+			count(id)					AS chapterNum
+		FROM
+			`b_owchcp_chapter`
+		where
+			book_id = #{bookId};
+    </select>
+
+    <select id="getLastChapter" resultMap="chapterMap">
+        select id, `name`, cp_chapter_id, ctime from b_owchcp_chapter where book_id=#{bookId} and is_more=0 order by id desc,ctime desc limit 1
+    </select>
+
+    <select id="getChapterByCpChapterId" resultMap="chapterMap">
+        select id,`name`,cp_chapter_id from b_owchcp_chapter where book_id = #{bookId} and cp_chapter_id = #{cpChapterId}
+    </select>
+
+    <select id="listChapters" resultMap="chapterMap">
+        select * from b_owchcp_chapter where book_id=#{bookId}
+    </select>
+
+    <select id="listMoreChapter" resultMap="chapterMap">
+        select * from b_owchcp_chapter where book_id=#{bookId} and is_more=1
+    </select>
+
+    <update id="updateMoreOfChapter">
+        update b_owchcp_chapter set is_more=#{isMore} where id>#{id} and book_id=#{bookId}
+    </update>
+
+    <delete id="deleteMoreChapter">
+        delete from b_owchcp_chapter where id>#{id} and book_id=#{bookId}
+    </delete>
+
+    <update id="modifyCpChapterId">
+        UPDATE b_owchcp_chapter
+        SET cp_chapter_id = (
+            CASE
+                WHEN CHAR_LENGTH(cp_chapter_id) >= 40 THEN cp_chapter_id
+                ELSE CONCAT('0', cp_chapter_id)
+            END)
+        WHERE book_id = #{bookId}
+    </update>
+
+    <update id="modifyCpChapterIdByRange">
+        UPDATE b_owchcp_chapter
+        SET cp_chapter_id = (
+            CASE
+                WHEN CHAR_LENGTH(cp_chapter_id) >= 40 THEN cp_chapter_id
+                ELSE CONCAT(cp_chapter_id, #{randomMark})
+            END)
+        <where>
+            book_id=#{bookId}
+            <if test="startChapterId > 0">and id >= #{startChapterId}</if>
+            <if test="endChapterId != -1">and id &lt;= #{endChapterId}</if>
+        </where>
+    </update>
+
+    <update id="updateChapterInfo">
+        UPDATE b_owchcp_chapter
+        <set>
+            <if test="cpChapterId!=null and cpChapterId!=''">cp_chapter_id=#{cpChapterId},</if>
+            <if test="volumeId!=null">volume_id=#{volumeId},</if>
+            <if test="bookId!=null and bookId!=''">book_id=#{bookId},</if>
+            <if test="name!=null and name!=''">name=#{name},</if>
+            <if test="isFree!=null">is_free=#{isFree},</if>
+            <if test="isExist!=null">is_exist=#{isExist},</if>
+            <if test="wordNum!=null">word_num=#{wordNum},</if>
+            <if test="isMore!=null">is_more=#{isMore},</if>
+            utime=now()
+        </set>
+        where id=#{id}
+    </update>
+
+    <insert id="saveChapterExtend" parameterType="com.dz.coop.module.model.ChapterExtend">
+        INSERT INTO b_owchcp_chapter_extend(book_id, chapter_id, extend, ctime, utime)
+        VALUES (#{bookId}, #{chapterId}, #{extend}, now(), now())
+    </insert>
+
+    <select id="getChapterExtendByChapterId" parameterType="string" resultMap="chapterExtendMap">
+        SELECT * FROM b_owchcp_chapter_extend WHERE chapter_id = #{chapterId}
+    </select>
+
+    <update id="updateChapterExtend" parameterType="com.dz.coop.module.model.ChapterExtend">
+        UPDATE b_owchcp_chapter_extend
+        <set>
+            <if test="extend != null">
+                extend = #{extend},
+            </if>
+            utime = now()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteChapterByBookChapterIdRange">
+        DELETE FROM b_owchcp_chapter WHERE book_id = #{bookId} AND id >= #{startChapterId} AND id &lt;= #{endChapterId};
+    </delete>
+
+    <update id = "updateVolumeIdByBookIdAndChapterRange">
+        UPDATE b_owchcp_chapter
+        <set>
+            <if test="volumeId != null and volumeId != ''">volume_id = #{volumeId},</if>
+            utime = now()
+        </set>
+        WHERE book_id = #{bookId} AND id >= #{startChapterId} AND id &lt;= #{endChapterId}
+    </update>
+
+</mapper>

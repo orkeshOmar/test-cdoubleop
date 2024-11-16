@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.PartnerUrlMapper">
+
+    <resultMap id="partnerUrlMap" type="com.dz.coop.module.model.PartnerUrl">
+        <id column="id" property="id"/>
+        <result column="pid" property="pid"/>
+        <result column="booklist_url" property="bookListUrl"/>
+        <result column="bookinfo_url" property="bookInfoUrl"/>
+        <result column="chapterlist_url" property="chapterListUrl"/>
+        <result column="chapterinfo_url" property="chapterInfoUrl"/>
+        <result column="ctime" property="ctime"/>
+    </resultMap>
+
+    <select id="getPartnerUrlByPartnerId" resultMap="partnerUrlMap">
+        select * from b_owchcp_partner_url where pid=#{pid}
+    </select>
+
+
+</mapper>

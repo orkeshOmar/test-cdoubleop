@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.VolumeMapper">
+
+    <resultMap id="volumeMap" type="com.dz.coop.module.model.Volume">
+        <id column="id" property="id"/>
+        <result column="cp_volume_id" property="cpVolumeId"/>
+        <result column="name" property="name"/>
+        <result column="book_id" property="bookId"/>
+        <result column="ctime" property="ctime"/>
+        <result column="utime" property="utime"/>
+    </resultMap>
+
+    <select id="getVolume" resultMap="volumeMap">
+        select * from b_owchcp_volume where cp_volume_id=#{cpVolumeId} and book_id=#{bookId}
+    </select>
+
+    <select id="getVolumeById" resultType="string">
+        select cp_volume_id from b_owchcp_volume where id=#{id}
+    </select>
+
+    <insert id="save" keyProperty="id" useGeneratedKeys="true">
+        insert into b_owchcp_volume(cp_volume_id,name,book_id,ctime,utime) values (#{cpVolumeId},#{name},#{bookId},now(),now())
+    </insert>
+
+    <update id="updateVolumeByBookIdAndVolumeId">
+        UPDATE b_owchcp_volume
+        <set>
+            <if test="cpVolumeId != null and cpVolumeId != ''">cp_volume_id = #{cpVolumeId},</if>
+            <if test="name != null and name != ''">`name` = #{name},</if>
+            utime = now()
+        </set>
+        WHERE id = #{id} AND book_id = #{bookId}
+    </update>
+
+</mapper>

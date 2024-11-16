@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.BookReportMapper">
+
+    <resultMap id="hourReportRecordMap" type="com.dz.coop.module.model.report.HourReportModel">
+        <result column="dtime" property="dtime"/>
+        <result column="perHrUpdateNum" property="perHrUpdateNum"/>
+    </resultMap>
+
+    <resultMap id="topUpdateBookMap" type="com.dz.coop.module.model.report.TopUpdateBookModel">
+        <result column="partnerId" property="partnerId"/>
+        <result column="partnerName" property="partnerName"/>
+        <result column="updateBookNum" property="updateBookNum"/>
+    </resultMap>
+
+    <select id="getHourReportRecord" resultMap="hourReportRecordMap">
+        SELECT SUBSTR(t.ctime, 1, 13) dtime, count(*) perHrUpdateNum
+        FROM b_owchcp_chapter t
+        WHERE t.ctime > CURDATE()
+        GROUP BY SUBSTR(t.ctime, 1, 13)
+    </select>
+
+    <select id="getTopUpdateBookRecord" resultMap="topUpdateBookMap">
+        SELECT partnerId, partnerName, updateBookNum
+        FROM (
+            SELECT b.cp_partner_id partnerId, p.`name` partnerName, COUNT(b.cp_partner_id) updateBookNum
+            FROM b_book b, b_owchcp_partner p
+            WHERE b.cp_partner_id = p.id AND b.last_chapter_utime > CURDATE()
+            GROUP BY b.cp_partner_id) tmp
+        ORDER BY tmp.updateBookNum DESC
+        LIMIT #{topNum}
+    </select>
+
+    <select id="getCurrentDayUpdateNum" resultType="int">
+       SELECT COUNT(t.book_id) FROM b_book t WHERE t.last_chapter_utime > CURDATE()
+    </select>
+
+    <select id="getCurrentDayAddBookNum" resultType="int">
+        SELECT COUNT(t.book_id) FROM b_book t WHERE t.create_time >= CURDATE()
+    </select>
+
+    <select id="getCurrentDayAddBookRecord" resultType="com.dz.coop.module.model.report.NewBookModel">
+        SELECT t.book_id bookId, t.cp_book_id cpBookId, t.`name` cpBookName, p.`name` cpName, t.cp_partner_id cpPartnerId
+        FROM `b_book` t, b_owchcp_partner p
+        WHERE t.cp_partner_id = p.id AND t.create_time > CURDATE()
+        ORDER BY cp_partner_id, book_id
+    </select>
+
+</mapper>

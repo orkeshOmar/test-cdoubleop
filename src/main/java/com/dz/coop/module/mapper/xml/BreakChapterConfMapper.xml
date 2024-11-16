@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dz.coop.module.mapper.BreakChapterConfMapper">
+
+    <resultMap id="baseMap" type="com.dz.coop.module.model.BreakChapterConf">
+        <id column="id" property="id"/>
+        <result column="book_id" property="bookId"/>
+        <result column="new_book_id" property="newBookId"/>
+        <result column="new_book_name" property="newBookName"/>
+        <result column="break_chapter_num" property="breakChapterNum"/>
+        <result column="start_chapter" property="startChapter"/>
+        <result column="min_chapter_words" property="minChapterWords"/>
+        <result column="type" property="type"/>
+        <result column="status" property="status"/>
+        <result column="ctime" property="ctime"/>
+        <result column="utime" property="utime"/>
+    </resultMap>
+
+    <select id="getBreakChapterConfByBookId" resultMap="baseMap">
+        SELECT c.id, c.new_book_id, c.book_id, c.new_book_name, c.break_chapter_num, c.start_chapter, c.min_chapter_words, c.`status`, c.ctime, c.utime, c.chapter_rename, c.type
+        FROM b_break_chapter_conf c, b_book b
+        WHERE c.new_book_id = b.book_id AND c.book_id = #{bookId} AND c.`status` = 1 AND c.`type` = 1 AND b.market_status != 10
+    </select>
+
+    <select id="getBreakChapterConfByNewBookId" resultMap="baseMap">
+        SELECT * FROM b_break_chapter_conf WHERE new_book_id = #{newBookId}
+    </select>
+
+    <select id="getBreakNewChapterIds" resultType="com.dz.coop.module.model.cp.CPChapter">
+        SELECT new_book_id as bookId, new_chapter_id as id, s.name as name
+		FROM b_break_chapter_relation t LEFT JOIN b_owchcp_chapter s ON s.id = t.new_chapter_id
+		WHERE t.book_id = #{bookId} AND t.chapter_id = #{chapterId}
+		ORDER BY t.book_id, t.new_chapter_id
+    </select>
+
+    <select id="getAllBreakSourceBookIds" resultType="string">
+        SELECT book_id FROM b_break_chapter_conf
+    </select>
+
+</mapper>

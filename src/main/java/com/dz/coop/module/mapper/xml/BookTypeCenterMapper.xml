@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.BookTypeCenterMapper">
+
+    <resultMap id="baseMap" type="com.dz.coop.module.model.BookTypeCenter">
+        <id column="id" property="id"/>
+        <result column="book_id" property="bookId"/>
+        <result column="one_type_id" property="oneTypeId"/>
+        <result column="two_type_id" property="twoTypeId"/>
+        <result column="three_type_id" property="threeTypeId"/>
+    </resultMap>
+
+    <insert id="save" parameterType="com.dz.coop.module.model.BookTypeCenter">
+        insert into b_book_type_center(book_id,one_type_id,two_type_id,three_type_id,ctime) values
+            (#{bookId}, #{oneTypeId}, #{twoTypeId}, #{threeTypeId}, now())
+    </insert>
+
+    <select id="getBookTypeCenter" resultMap="baseMap">
+        select * from b_book_type_center where book_id=#{bookId}
+
+        <if test="threeTypeId!=null">
+            and three_type_id=#{threeTypeId}
+        </if>
+        <if test="twoTypeId!=null">
+            and two_type_id=#{twoTypeId},
+        </if>
+        <if test="oneTypeId!=null">
+            and one_type_id=#{oneTypeId}
+        </if>
+    </select>
+
+</mapper>

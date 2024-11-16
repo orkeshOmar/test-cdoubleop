@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.BookTypeTwoMapper">
+    <resultMap id="baseMap" type="com.dz.coop.module.model.BookTypeTwo">
+        <id column="id" property="id"/>
+        <result column="one_type_id" property="oneTypeId"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="img" property="img"/>
+        <result column="corner_name" property="cornerName"/>
+        <result column="corner_color" property="cornerColor"/>
+        <result column="status" property="status"/>
+        <result column="sort" property="sort"/>
+        <result column="ctime" property="ctime"/>
+        <result column="utime" property="utime"/>
+    </resultMap>
+
+    <select id="getBookTypeTwo" resultMap="baseMap">
+        select  * from b_book_type_two where id=#{id}
+    </select>
+
+    <select id="getAudioTypeTwoMap" resultType="java.util.Map">
+        SELECT `name`, id FROM `b_book_type_two` WHERE one_type_id = 7
+    </select>
+
+    <select id="getAudioTypeThreeMap" resultType="java.util.Map">
+        SELECT CONCAT(a.`name`, '_', b.`name`) AS `name`, b.id
+        FROM b_book_type_two a, `b_book_type_three` b
+        WHERE a.id = b.two_type_id AND a.one_type_id = 7
+    </select>
+
+</mapper>

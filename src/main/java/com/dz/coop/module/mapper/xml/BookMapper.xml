@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.BookMapper">
+
+    <resultMap id="bookMap" type="com.dz.coop.module.model.Book">
+        <id column="id" property="id"/>
+        <result column="book_id" property="bookId"/>
+        <result column="cp_book_id" property="cpBookId"/>
+        <result column="cp_partner_id" property="partnerId"/>
+        <result column="book_name" property="name"/>
+        <result column="author" property="author"/>
+        <result column="introduction" property="introduction"/>
+        <result column="is_sync" property="isSync"/>
+        <result column="from" property="from"/>
+        <result column="pay_type" property="payType"/>
+        <result column="cover_wap" property="coverWap"/>
+        <result column="cover_www" property="coverWww"/>
+        <result column="book_type_id" property="bookTypeId"/>
+        <result column="click_num" property="clickNum"/>
+        <result column="praise_num" property="praiseNum"/>
+        <result column="total_chapter_num" property="totalChapterNum"/>
+        <result column="recommend_price" property="recommendPrice"/>
+        <result column="unit" property="unit"/>
+        <result column="price" property="price"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="market_status" property="marketStatus"/>
+        <result column="total_word_size" property="totalWordSize"/>
+        <result column="paytype_cnf" property="payTypeCnf"/>
+        <result column="last_chapter_id" property="lastChapterId"/>
+        <result column="last_chapter_name" property="lastChapterName"/>
+        <result column="last_chapter_utime" property="lastChapterUtime"/>
+        <result column="book_type" property="bookType"/>
+        <result column="extend" property="extend"/>
+
+        <association property="lastChapter" column="book_id" select="com.dz.coop.module.mapper.ChapterMapper.getLastChapter"/>
+    </resultMap>
+    <insert id="save" parameterType="com.dz.coop.module.model.Book">
+        insert into b_book
+			(book_id,cp_book_id,cp_partner_id,author,`name`,book_name,`from`,pay_type,paytype_cnf,cover_wap,introduction,
+			recommend_price,price,click_num,unit,book_type_id,status,market_status,create_time,update_time,tag_new,book_type,praise_num,extend)
+		values
+			(#{bookId},#{cpBookId},#{partnerId},#{author},#{name},#{name},#{from},#{payType},#{payTypeCnf},#{coverWap},#{introduction},
+			#{recommendPrice},#{price},#{clickNum},#{unit},#{bookTypeId},#{status},#{marketStatus},now(),now(),#{tag},#{bookType},#{praiseNum},#{extend})
+    </insert>
+    <update id="update">
+        update
+			b_book
+		set
+			total_word_size = #{totalWordSize},
+			total_chapter_num = #{totalChapterNum},
+			last_chapter_id = #{lastChapterId},
+			last_chapter_name = #{lastChapterName},
+			last_chapter_utime = #{lastChapterUtime},
+			update_time = now()
+		where
+			book_id = #{bookId}
+    </update>
+
+    <select id="listAllPopularBooks" resultType="string">
+        select book_id from b_owchcp_book_update where is_sync=1
+    </select>
+
+    <select id="getBookByBookId" resultMap="bookMap">
+        select * from b_book where book_id=#{bookId}
+    </select>
+
+    <select id="getBookByCpBookIdAndPartnerId" resultMap="bookMap">
+        select * from b_book where cp_book_id=#{cpBookId} and cp_partner_id=#{partnerId}
+    </select>
+
+    <select id="listRecentUpdateBooks" parameterType="int" resultType="string">
+       select book_id from b_book where `from`=2 and market_status=1 and status='连载' and book_type = #{bookType} and last_chapter_utime>DATE_SUB(CURDATE(),INTERVAL 1 WEEK)
+    </select>
+
+    <select id="getAllNeedUpdateAudioBookId" resultType="string">
+        SELECT book_id
+        FROM b_book
+        WHERE `from`= 2 AND book_type = 2 AND cp_partner_id != 30000000 AND cp_partner_id != 30000001 AND cp_book_id IS NOT NULL
+    </select>
+
+    <select id="getAllLostBookStatusBookId" resultType="string">
+        SELECT book_id
+        FROM `b_book`
+        WHERE `from`= 2 AND `status` IS NULL
+    </select>
+
+    <update id="updateStatus" parameterType="com.dz.coop.module.model.Book">
+        update b_book
+        set `status` = #{status}, update_time = now()
+        where book_id = #{bookId}
+    </update>
+
+    <select id="getBookIdByTimeRange" resultType="string">
+        SELECT book_id FROM b_book WHERE create_time BETWEEN #{timeStart} AND #{timeEnd}
+    </select>
+
+    <update id="updateCpBookId">
+        UPDATE b_book
+        SET cp_book_id = #{cpBookId}, update_time = NOW()
+        WHERE book_id = #{bookId}
+    </update>
+
+    <update id="updateBookInfo" parameterType="com.dz.coop.module.model.Book">
+        UPDATE b_book
+        <set>
+            <if test="name != null and name != ''">
+                book_name = #{name},
+            </if>
+            <if test="author != null and author != ''">
+                author = #{author},
+            </if>
+            <if test="introduction != null and introduction != ''">
+                introduction = #{introduction},
+            </if>
+            <if test="status != null and status != ''">
+                `status` = #{status},
+            </if>
+            <if test="unit != null and unit != ''">
+                unit = #{unit},
+            </if>
+            <if test="marketStatus != null">
+                market_status = #{marketStatus},
+            </if>
+            <if test="price != null and price != ''">
+                price = #{price},
+            </if>
+            <if test="recommendPrice != null and recommendPrice != ''">
+                recommend_price = #{recommendPrice},
+            </if>
+            <if test="extend != null and extend != ''">
+                extend = #{extend},
+            </if>
+            update_time = NOW()
+        </set>
+        WHERE book_id = #{bookId}
+    </update>
+
+    <select id="getAllBookIdByPartner" resultType="string">
+        SELECT book_id FROM b_book WHERE `from` = 2 AND cp_partner_id = #{partnerId}
+    </select>
+
+</mapper>

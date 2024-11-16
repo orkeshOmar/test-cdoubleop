@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dz.coop.module.mapper.CheckBookMapper">
+
+    <resultMap id="baseMap" type="com.dz.coop.module.model.CheckBook">
+        <id column="id" property="id"/>
+        <result column="book_id" property="bookId"/>
+        <result column="book_grade" property="bookGrade"/>
+    </resultMap>
+
+    <select id="getCheckBook" resultMap="baseMap">
+		select * from check_book where book_id = #{book_id}
+	</select>
+
+</mapper>
